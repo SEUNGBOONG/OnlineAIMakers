@@ -1,0 +1,31 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches:
+      - main  # 'main' 브랜치에 푸시될 때마다 배포 실행
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2  # 코드 체크아웃
+
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}  # GitHub Secrets에 저장된 SSH 개인 키 사용
+
+      - name: Copy files to EC2
+        run: |
+          scp -r ./study ec2-user@15.164.217.29:/home/ec2-user/deployment  # EC2 주소와 경로로 파일 전송
+
+      - name: SSH into EC2 and deploy
+        run: |
+          ssh ec2-user@15.164.217.29 << 'EOF'
+            cd /home/ec2-user/deployment
+            docker-compose down  # 기존 컨테이너 중지 (rolling deployment의 경우)
+            docker-compose up -d  # 새 버전으로 컨테이너 실행
+          EOF
