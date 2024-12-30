@@ -26,6 +26,13 @@ jobs:
         run: |
           ssh ec2-user@15.164.217.29 << 'EOF'
             cd /home/ec2-user/deployment
-            docker-compose down  # 기존 컨테이너 중지 (rolling deployment의 경우)
-            docker-compose up -d  # 새 버전으로 컨테이너 실행
+            # Green 환경에서 새 버전 실행 (새로운 버전의 컨테이너 시작)
+            docker-compose -f docker-compose-green.yml up -d
+
+            # 트래픽을 Green으로 전환하는 작업 (예: 로드 밸런서 설정에 따라 다름)
+            # 여기에서는 별도의 Nginx나 로드 밸런서 없이도 바로 Green 환경으로 전환하는 방식
+            # 트래픽 전환 후 Blue 환경의 기존 컨테이너 종료 (선택적)
+            docker-compose -f docker-compose-blue.yml down  # Blue 환경 종료
+
+            # Green 환경으로 정상적으로 전환되면, 새 버전의 서비스가 실행됨
           EOF
