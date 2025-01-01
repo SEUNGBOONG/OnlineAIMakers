@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.Objects;
 
-@Entity
+@Entity(name = "studyUser")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class Member {
