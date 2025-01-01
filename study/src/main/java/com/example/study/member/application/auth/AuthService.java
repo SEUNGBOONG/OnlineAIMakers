@@ -1,6 +1,6 @@
 package com.example.study.member.application.auth;
 
-import com.example.study.member.domain.member.Member;
+import com.example.study.member.domain.member.StudyMember;
 import com.example.study.member.exception.exceptions.auth.DuplicateEmailException;
 import com.example.study.member.exception.exceptions.auth.DuplicateNickNameException;
 import com.example.study.member.exception.exceptions.auth.InvalidEmailFormatException;
@@ -32,15 +32,15 @@ public class AuthService {
 
 
     @Transactional
-    public Member signUp(SignUpRequest signUpRequest) {
+    public StudyMember signUp(SignUpRequest signUpRequest) {
         validateSignupRequestFormat(signUpRequest);
         validateEmailFormat(signUpRequest.memberEmail());
         checkPasswordLength(signUpRequest.memberPassword());
-        Member member = AuthMapper.toMember(signUpRequest);
-        checkDuplicateMemberNickName(member.getMemberNickName());
-        checkDuplicateMemberEmail(member.getMemberEmail());
+        StudyMember studyMember = AuthMapper.toMember(signUpRequest);
+        checkDuplicateMemberNickName(studyMember.getMemberNickName());
+        checkDuplicateMemberEmail(studyMember.getMemberEmail());
 
-        return memberJpaRepository.save(member);
+        return memberJpaRepository.save(studyMember);
     }
 
     private void validateSignupRequestFormat(SignUpRequest signUpRequest) {
@@ -81,11 +81,11 @@ public class AuthService {
     @Transactional(readOnly = true)
     public LoginResponse login(LoginRequest loginRequest) {
         validateLoginRequestFormat(loginRequest);
-        Member member = findMemberByEmail(loginRequest.memberEmail());
-        member.checkPassword(loginRequest.memberPassword());
-        String token = jwtTokenProvider.createToken(member.getId());
+        StudyMember studyMember = findMemberByEmail(loginRequest.memberEmail());
+        studyMember.checkPassword(loginRequest.memberPassword());
+        String token = jwtTokenProvider.createToken(studyMember.getId());
 
-        return new LoginResponse(token, member.getId(), member.getMemberName(), member.getMemberNickName());
+        return new LoginResponse(token, studyMember.getId(), studyMember.getMemberName(), studyMember.getMemberNickName());
     }
 
     private void validateLoginRequestFormat(LoginRequest loginRequest) {
@@ -96,7 +96,7 @@ public class AuthService {
         }
     }
 
-    private Member findMemberByEmail(String email) {
+    private StudyMember findMemberByEmail(String email) {
         return memberJpaRepository.findMemberByMemberEmail(email)
                 .orElseThrow(NotFoundMemberByEmailException::new);
     }

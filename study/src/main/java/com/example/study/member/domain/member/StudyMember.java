@@ -15,7 +15,7 @@ import java.util.Objects;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class Member {
+public class StudyMember {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,7 +34,7 @@ public class Member {
     private String memberNickName;
 
 
-    public Member(final String memberEmail, final String memberName, final String memberPassword, final String memberNickName) {
+    public StudyMember(final String memberEmail, final String memberName, final String memberPassword, final String memberNickName) {
         this.memberEmail = memberEmail;
         this.memberName = memberName;
         this.memberPassword = memberPassword;
